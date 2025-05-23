@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Assinatura Digital Forest</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@500&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    body {margin: 0; font-family: 'Montserrat', sans-serif; background: #f4f7fc; color: #002279;
+      display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 40px 20px;}
+    h1 {font-family: 'Fira Code', monospace; color: #05f282; margin-bottom: 20px;}
+    .form-container {background: #e6ecf7; padding: 24px; border-radius: 16px; margin-bottom: 40px;
+      max-width: 640px; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.05);}
+    .form-container label {display: block; margin-top: 16px; font-weight: 500;}
+    .form-container input[type="text"], .form-container input[type="file"] {
+      width: 100%; padding: 10px; margin-top: 6px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px;
+    }
+    .btn-primary {background: #05f282; color: #002279; font-weight: bold; border: none;
+      padding: 12px 20px; border-radius: 10px; margin-top: 24px; cursor: pointer; font-size: 16px;}
+    .assinatura {
+      position: relative;
+      background: #002454 url('https://digitalforest.com.br/wp-content/uploads/2024/02/Frame-104.png') no-repeat center center;
+      background-size: cover;
+      border-radius: 16px;
+      overflow: hidden;
+      width: 640px;
+      padding: 24px;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .foto {width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #FFFFFF; margin-right: 24px;}
+    .info {flex: 1;}
+    .info h1 {font-family: 'Fira Code', monospace; font-size: 20px; margin: 0 0 4px; color: #05f282;}
+    .info p {margin: 0; font-size: 14px; color: #fff;}
+    .info #pCargo {font-weight: 600; font-size: 15px;}
+    .info .linha {margin: 6px 0; display: flex; align-items: center; gap: 8px;}
+    .info .linha i {color: #05f282;}
+    .info a {color: #fff; text-decoration: none;}
+    .logo {position: absolute; bottom: 12px; right: 12px; height: 40px;}
+  </style>
+</head>
+<body>
+  <h1>Gerador de Assinatura de E-mail</h1>
+  <div class="form-container">
+    <label for="nome">Nome</label>
+    <input type="text" id="nome" value="Marília Leal" oninput="atualizarAssinatura()">
+    <label for="cargo">Cargo</label>
+    <input type="text" id="cargo" value="UX Designer" oninput="atualizarAssinatura()">
+    <label for="telefone">Telefone</label>
+    <input type="text" id="telefone" value="+55 (91) 99999-9999" oninput="atualizarAssinatura()">
+    <label for="email">Email</label>
+    <input type="text" id="email" value="marilia@digitalforest.bio" oninput="atualizarAssinatura()">
+    <label for="linkedin">LinkedIn</label>
+    <input type="text" id="linkedin" value="linkedin.com/in/marilialeallux" oninput="atualizarAssinatura()">
+    <label for="foto">Foto</label>
+    <input type="file" id="foto" accept="image/*" onchange="atualizarAssinatura()">
+  </div>
+  <div class="assinatura" id="preview">
+    <img class="foto" id="fotoPreview" src="foto.png" alt="Foto">
+    <div class="info">
+      <h1 id="pNome">Marília Leal</h1>
+      <p id="pCargo">UX Designer</p>
+      <p class="linha" id="pTelefone"><i class="fas fa-phone"></i><span>+55 (91) 99999-9999</span></p>
+      <p class="linha" id="pEmail"><i class="fas fa-envelope"></i><span>marilia@digitalforest.bio</span></p>
+      <p class="linha"><i class="fab fa-linkedin"></i><a id="pLinkedin" href="https://linkedin.com/in/marilialeallux" target="_blank">linkedin.com/in/marilialeallux</a></p>
+    </div>
+    <img class="logo" src="https://digitalforest.com.br/wp-content/uploads/2024/02/dforest_horizontal_green-1.svg" alt="Logo Digital Forest">
+  </div>
+  <button class="btn-primary" onclick="baixarAssinatura()">Baixar Assinatura</button>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    function atualizarAssinatura() {
+      document.getElementById("pNome").textContent = document.getElementById("nome").value;
+      document.getElementById("pCargo").textContent = document.getElementById("cargo").value;
+      document.getElementById("pTelefone").querySelector("span").textContent = document.getElementById("telefone").value;
+      document.getElementById("pEmail").querySelector("span").textContent = document.getElementById("email").value;
+      const linkedin = document.getElementById("linkedin").value;
+      document.getElementById("pLinkedin").href = 'https://' + linkedin.replace(/^(https?:\/\/)?/, '');
+      document.getElementById("pLinkedin").textContent = linkedin;
+      const foto = document.getElementById("foto").files[0];
+      if (foto) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById("fotoPreview").src = e.target.result;
+        };
+        reader.readAsDataURL(foto);
+      }
+    }
+    function baixarAssinatura() {
+      html2canvas(document.getElementById("preview"), { backgroundColor: null }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'assinatura-digital-forest.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+  </script>
+</body>
+</html>
