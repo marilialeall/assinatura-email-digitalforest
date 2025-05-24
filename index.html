@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -72,6 +71,16 @@
   <button class="btn-primary" onclick="baixarAssinatura()">Baixar Assinatura</button>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
+    function preloadImage(url) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = url;
+      });
+    }
+
     function atualizarAssinatura() {
       document.getElementById("pNome").textContent = document.getElementById("nome").value;
       document.getElementById("pCargo").textContent = document.getElementById("cargo").value;
@@ -89,13 +98,34 @@
         reader.readAsDataURL(foto);
       }
     }
-    function baixarAssinatura() {
-      html2canvas(document.getElementById("preview"), { backgroundColor: null }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = 'assinatura-digital-forest.png';
-        link.href = canvas.toDataURL();
-        link.click();
-      });
+
+    async function baixarAssinatura() {
+      try {
+        // Pré-carrega todas as imagens externas
+        await Promise.all([
+          preloadImage('https://digitalforest.com.br/wp-content/uploads/2024/02/Frame-104.png'),
+          preloadImage('https://digitalforest.com.br/wp-content/uploads/2024/02/dforest_horizontal_green-1.svg')
+        ]);
+
+        // Adiciona um pequeno delay para garantir que tudo está carregado
+        setTimeout(async () => {
+          const canvas = await html2canvas(document.getElementById("preview"), { 
+            backgroundColor: null,
+            useCORS: true,
+            allowTaint: true,
+            scale: 2,
+            logging: true
+          });
+          
+          const link = document.createElement('a');
+          link.download = 'assinatura-digital-forest.png';
+          link.href = canvas.toDataURL('image/png', 1.0);
+          link.click();
+        }, 500);
+      } catch (error) {
+        console.error('Erro ao gerar assinatura:', error);
+        alert('Ocorreu um erro ao gerar a assinatura. Verifique o console para mais detalhes.');
+      }
     }
   </script>
 </body>
